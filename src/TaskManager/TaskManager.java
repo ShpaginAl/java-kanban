@@ -9,7 +9,7 @@ public class TaskManager {
     public HashMap<Integer, Task> tasks = new HashMap<Integer, Task>();
     public HashMap<Integer, Epic> epics = new HashMap<Integer, Epic>();
     public HashMap<Integer, Subtask> subtasks = new HashMap<Integer, Subtask>();
-    static int id = 0;
+    public int id = 0;
 
     //создание задач
     public void createTask(Task task) {
