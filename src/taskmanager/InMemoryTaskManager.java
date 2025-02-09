@@ -1,4 +1,5 @@
 package taskmanager;
+
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +42,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public HashMap<Integer, Epic> printEpics()
-    {
+    public HashMap<Integer, Epic> printEpics() {
         return epics;
     }
 
@@ -81,25 +81,25 @@ public class InMemoryTaskManager implements TaskManager {
     //Удаление задач по айди
     @Override
     public void deleteTask(int id) {
-            tasks.remove(id);
-            historyManager.remove(id);
+        tasks.remove(id);
+        historyManager.remove(id);
     }
 
     //удаление эпика по айди
     @Override
     public void deleteEpic(int id) {
-            epics.remove(id);
-            historyManager.remove(id);
-            List<Integer> subtaskIds = new ArrayList<>();
-            for (Subtask subtask : subtasks.values()) {
-                if (subtask.getEpicId() == id) {
-                    subtaskIds.add(subtask.getId());
-                }
+        epics.remove(id);
+        historyManager.remove(id);
+        List<Integer> subtaskIds = new ArrayList<>();
+        for (Subtask subtask : subtasks.values()) {
+            if (subtask.getEpicId() == id) {
+                subtaskIds.add(subtask.getId());
             }
-            for (int index : subtaskIds) {
-                subtasks.remove(index);
-                historyManager.remove(index);
-            }
+        }
+        for (int index : subtaskIds) {
+            subtasks.remove(index);
+            historyManager.remove(index);
+        }
     }
 
     //удаление подзадачи по айди
@@ -154,36 +154,36 @@ public class InMemoryTaskManager implements TaskManager {
     // Обновление задачи
     @Override
     public void updateTask(Task task) {
-            tasks.get(task.getId()).setName(task.getName());
-            tasks.get(task.getId()).setDescription(task.getDescription());
-            tasks.get(task.getId()).setStatus(task.getStatus());
+        tasks.get(task.getId()).setName(task.getName());
+        tasks.get(task.getId()).setDescription(task.getDescription());
+        tasks.get(task.getId()).setStatus(task.getStatus());
     }
 
     // обновление эпика
     @Override
     public void updateEpic(Epic epic) {
-            epics.get(epic.getId()).setName(epic.getName());
-            epics.get(epic.getId()).setDescription(epic.getDescription());
+        epics.get(epic.getId()).setName(epic.getName());
+        epics.get(epic.getId()).setDescription(epic.getDescription());
     }
 
     // обновление подзадачи
     @Override
     public void updateSubtask(Subtask subtask) {
-            subtasks.get(subtask.getId()).setName(subtask.getName());
-            subtasks.get(subtask.getId()).setDescription(subtask.getDescription());
-            subtasks.get(subtask.getId()).setStatus(subtask.getStatus());
-            updateStatusOfEpic(subtask);
+        subtasks.get(subtask.getId()).setName(subtask.getName());
+        subtasks.get(subtask.getId()).setDescription(subtask.getDescription());
+        subtasks.get(subtask.getId()).setStatus(subtask.getStatus());
+        updateStatusOfEpic(subtask);
     }
 
     //Получить подзадачи определенного эпика
     @Override
     public void getSubtasksOfEpic(int epicId) {
-            ArrayList<Integer> subtasksInEpic = epics.get(epicId).getSubtasks();
-            if (!subtasksInEpic.isEmpty()) {
-                for (int subtask : subtasksInEpic) {
-                    System.out.println(subtasks.get(subtask));
-                }
+        ArrayList<Integer> subtasksInEpic = epics.get(epicId).getSubtasks();
+        if (!subtasksInEpic.isEmpty()) {
+            for (int subtask : subtasksInEpic) {
+                System.out.println(subtasks.get(subtask));
             }
+        }
     }
 
     @Override
@@ -192,7 +192,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     // обновление статуса эпика
-    private void updateStatusOfEpic (Subtask subtask) {
+    private void updateStatusOfEpic(Subtask subtask) {
         boolean isDone = true;
         boolean isNew = true;
         for (int subtaskId : epics.get(subtask.getEpicId()).getSubtasks()) {
@@ -207,11 +207,9 @@ public class InMemoryTaskManager implements TaskManager {
         }
         if (!isDone && !isNew) {
             epics.get(subtask.getEpicId()).setStatus(Status.IN_PROGRESS);
-        }
-        else if (isDone) {
+        } else if (isDone) {
             epics.get(subtask.getEpicId()).setStatus(Status.DONE);
-        }
-        else if (isNew) {
+        } else if (isNew) {
             epics.get(subtask.getEpicId()).setStatus(Status.NEW);
         }
     }

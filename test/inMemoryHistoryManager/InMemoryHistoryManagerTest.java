@@ -21,8 +21,9 @@ class InMemoryHistoryManagerTest {
         inMemoryTaskManager.createTask(task2);
         inMemoryTaskManager.getTask(task1.getId());
         inMemoryTaskManager.getTask(task2.getId());
-        assertEquals(task2,inMemoryTaskManager.getHistory().get(1));
+        assertEquals(task2, inMemoryTaskManager.getHistory().get(1));
     }
+
     @Test
     public void theSameTaskIsDeletedFromHistoryManager() {
         TaskManager inMemoryTaskManager = Managers.getDefault();
