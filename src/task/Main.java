@@ -1,6 +1,6 @@
 package task;
 
-import taskManager.*;
+import taskmanager.*;
 
 
 public class Main {

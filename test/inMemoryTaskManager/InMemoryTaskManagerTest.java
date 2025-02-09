@@ -1,12 +1,11 @@
 package inMemoryTaskManager;
 
-import taskManager.*;
+import taskmanager.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import task.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 

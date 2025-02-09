@@ -4,9 +4,8 @@ import org.junit.jupiter.api.Test;
 import task.Epic;
 import task.Status;
 import task.Task;
-import taskManager.InMemoryTaskManager;
-import taskManager.Managers;
-import taskManager.TaskManager;
+import taskmanager.Managers;
+import taskmanager.TaskManager;
 
 import java.util.ArrayList;
 

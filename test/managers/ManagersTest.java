@@ -1,6 +1,6 @@
 package managers;
 
-import taskManager.*;
+import taskmanager.*;
 import org.junit.jupiter.api.Test;
 
 
