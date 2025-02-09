@@ -1,5 +1,6 @@
 package inMemoryTaskManager;
 
+import org.junit.jupiter.api.BeforeEach;
 import taskmanager.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -21,8 +22,8 @@ class InMemoryTaskManagerTest {
     private static ArrayList<Epic> epicslist;
     private static ArrayList<Subtask> subtasksList;
 
-    @BeforeAll
-    public static void beforeAll() {
+    @BeforeEach
+    public void beforeEach() {
         taskManager = Managers.getDefault();
         task1 = new Task("Утренная пробежка", "В 7:00 необходимо сделать утреннюю пробежку", Status.NEW);
         task2 = new Task("Утренная пробежка", "В 8:00 необходимо сделать утреннюю пробежку", Status.NEW);
