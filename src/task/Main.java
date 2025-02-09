@@ -43,7 +43,7 @@ public class Main {
         System.out.println(inMemoryTaskManager.getSubtask(subtask2.getId()));
         System.out.println(inMemoryTaskManager.getHistory());
 
-        inMemoryTaskManager.deleteTask(task1.getId());
+        inMemoryTaskManager.deleteTask(task2.getId());
         System.out.println(inMemoryTaskManager.getHistory());
         inMemoryTaskManager.deleteEpic(epic1.getId());
         System.out.println(inMemoryTaskManager.getHistory());
