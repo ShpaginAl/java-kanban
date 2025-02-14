@@ -10,6 +10,23 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node head;
     private Node tail;
 
+    @Override
+    public ArrayList<Task> getHistory() {
+        return getTasks();
+    }
+
+    @Override
+    public void addValueInHistory(Task task) {
+        add(task);
+    }
+
+    @Override
+    public void remove(int id) {
+        if (nodeMap.containsKey(id)) {
+            removeNode(id);
+        }
+    }
+
     private void linkLast(Task task) {
         final Node oldTail = tail;
         final Node newNode = new Node(oldTail, task, null);
@@ -61,25 +78,4 @@ public class InMemoryHistoryManager implements HistoryManager {
             node.next.prev = node.prev;
         }
     }
-
-
-    @Override
-    public ArrayList<Task> getHistory() {
-        return getTasks();
-    }
-
-    @Override
-    public void addValueInHistory(Task task) {
-        add(task);
-    }
-
-
-    @Override
-    public void remove(int id) {
-        if (nodeMap.containsKey(id)) {
-            removeNode(id);
-        }
-    }
-
-    //не забыть добавить удаление подзадач при удалении эпика
 }
