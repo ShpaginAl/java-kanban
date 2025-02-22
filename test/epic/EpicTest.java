@@ -1,11 +1,11 @@
 package epic;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 import task.Epic;
 import task.Status;
-import task.Task;
-import taskManager.InMemoryTaskManager;
+import taskmanager.InMemoryTaskManager;
 
 class EpicTest {
     @Test

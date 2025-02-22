@@ -1,4 +1,4 @@
-package taskManager;
+package taskmanager;
 
 import task.Task;
 
@@ -9,4 +9,6 @@ public interface HistoryManager {
     ArrayList<Task> getHistory();
 
     void addValueInHistory(Task task);
+
+    void remove(int id);
 }

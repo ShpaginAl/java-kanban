@@ -1,12 +1,12 @@
 package inMemoryTaskManager;
 
-import taskManager.*;
+import org.junit.jupiter.api.BeforeEach;
+import taskmanager.*;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import task.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -22,8 +22,8 @@ class InMemoryTaskManagerTest {
     private static ArrayList<Epic> epicslist;
     private static ArrayList<Subtask> subtasksList;
 
-    @BeforeAll
-    public static void beforeAll() {
+    @BeforeEach
+    public void beforeEach() {
         taskManager = Managers.getDefault();
         task1 = new Task("Утренная пробежка", "В 7:00 необходимо сделать утреннюю пробежку", Status.NEW);
         task2 = new Task("Утренная пробежка", "В 8:00 необходимо сделать утреннюю пробежку", Status.NEW);
@@ -33,18 +33,19 @@ class InMemoryTaskManagerTest {
                 " машину", 1, Status.NEW);
         subtask2 = new Subtask("Выбор салона", "Выбрать салон, в котором буду покупать" +
                 " машину", 1, Status.NEW);
-        tasksList = new ArrayList<>(); 
+        tasksList = new ArrayList<>();
         epicslist = new ArrayList<>();
         subtasksList = new ArrayList<>();
-        
+
         tasksList.add(task1);
         tasksList.add(task2);
         epicslist.add(epic1);
         epicslist.add(epic2);
         subtasksList.add(subtask1);
         subtasksList.add(subtask2);
-        
+
     }
+
     @Test
     public void addNewTaskInTaskManager() {
         taskManager.createTask(task1);
@@ -69,7 +70,7 @@ class InMemoryTaskManagerTest {
         taskManager.createTask(task1);
         assertEquals(task1, taskManager.getTask(task1.getId()), "задача должна быть неизменной (по всем полям) при добавлении задачи в менеджер");
     }
-    
+
     @Test
     public void returnListOfTasks() {
         taskManager.createTask(task1);
@@ -186,13 +187,13 @@ class InMemoryTaskManagerTest {
         assertNull(taskManager.getEpic(epic1.getId()), "Эпик должен удаляться по айди");
     }
 
-   @Test
-   public void deleteSubtaskFromRelatedEpicWhenDeleteSubtask() {
-       taskManager.createEpic(epic1);
-       taskManager.createSubtask(subtask1);
-       taskManager.createSubtask(subtask2);
-       taskManager.deleteAllSubtasks();
-       assertEquals(0, epic1.getSubtasks().size(), "Подзадача должна удаляться из списка связанных задач эпика при ее удалении");
+    @Test
+    public void deleteSubtaskFromRelatedEpicWhenDeleteSubtask() {
+        taskManager.createEpic(epic1);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.deleteAllSubtasks();
+        assertEquals(0, epic1.getSubtasks().size(), "Подзадача должна удаляться из списка связанных задач эпика при ее удалении");
     }
 
     @Test

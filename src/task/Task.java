@@ -6,13 +6,15 @@ public class Task {
     protected String name;
     protected String description;
     protected Status status;
-    private int id;
-    public Task (String name, String description, Status status) {
+    private Integer id;
+
+    public Task(String name, String description, Status status) {
         this.name = name;
         this.description = description;
         this.status = status;
     }
-    public Task (String name, String description, Status status, int id) {
+
+    public Task(String name, String description, Status status, int id) {
         this.name = name;
         this.description = description;
         this.status = status;
@@ -24,7 +26,9 @@ public class Task {
     }
 
     public void setId(int id) {
-       this.id = id;
+        if (this.id == null) {
+            this.id = id;
+        }
     }
 
     public void setStatus(Status status) {
@@ -72,6 +76,6 @@ public class Task {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id);
     }
 }

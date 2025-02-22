@@ -1,10 +1,9 @@
-package taskManager;
+package taskmanager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import task.* ;
-
+import task.*;
 
 public interface TaskManager {
     //создание задач
