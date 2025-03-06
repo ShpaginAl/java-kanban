@@ -24,10 +24,10 @@ public class Main {
         System.out.println(fileTaskManager.printTasks());
         System.out.println(fileTaskManager.printSubtasks());
 
-//        System.out.println("Запрашиваем задачу:");
-//        System.out.println(fileTaskManager.getTask(task1.getId()));
-//        System.out.println("Запрашиваем подзадачу:");
-//        System.out.println(fileTaskManager.getSubtask(subtask1.getId()));
+        System.out.println("Запрашиваем задачу:");
+        System.out.println(fileTaskManager.getTask(task1.getId()));
+        System.out.println("Запрашиваем подзадачу:");
+        System.out.println(fileTaskManager.getSubtask(subtask1.getId()));
         System.out.println("Запрашиваем эпик:");
         System.out.println(fileTaskManager.getEpic(epic1.getId()));
 //        System.out.println("Выводим историю запросов из созданного менеджера");
@@ -50,7 +50,6 @@ public class Main {
         taskManagerFromFile.createEpic(epic2);
         Epic epic3 = new Epic("Покупка машины2", "План по покупке новой машины", Status.NEW);
         taskManagerFromFile.createEpic(epic3);
-        taskManagerFromFile.deleteEpic(epic3.getId());
         System.out.println(taskManagerFromFile.printEpics());
 
 

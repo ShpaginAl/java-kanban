@@ -43,6 +43,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
             if (historyManager.getHistory() != null) {
                 writer.write(CSVTaskFormat.toString(historyManager));
+            } else {
+                writer.write("No value");
             }
         } catch (IOException exc) {
             throw new ManagerSaveException("Ошибка сохранения в файл");
@@ -52,19 +54,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public static FileBackedTaskManager loadFromFile(File file) {
         final FileBackedTaskManager taskManagerFromFile = new FileBackedTaskManager(file);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            br.readLine();
             String currentLine = br.readLine();
             String nextLine = br.readLine();
-            boolean firstLine = true;
             while (nextLine != null) {
-                if (firstLine) { //пропускаем первую строчку
-                    firstLine = false;
-                    currentLine = nextLine;
-                    nextLine = br.readLine();
-                    continue;
-                }
                 Task task = CSVTaskFormat.taskFromString(currentLine);
-                currentLine = nextLine;
-                nextLine = br.readLine();
                 switch (task.getType()) {
                     case TASK:
                         taskManagerFromFile.tasks.put(task.getId(), task);
@@ -75,16 +69,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         taskManagerFromFile.id++;
                         break;
                     case SUBTASK:
-                        assert task instanceof Subtask;
                         taskManagerFromFile.subtasks.put(task.getId(), (Subtask) task);
                         taskManagerFromFile.id++;
                         break;
                 }
-                for (Subtask subtask : taskManagerFromFile.subtasks.values()) {
-                    taskManagerFromFile.epics.get(subtask.getEpicId()).setSubtasks(subtask.getId());
-                }
+                currentLine = nextLine;
+                nextLine = br.readLine();
             }
-            if (currentLine.isEmpty()) {
+            if (!currentLine.equals("No value")) {
                 List<Integer> listOfHistory = CSVTaskFormat.historyFromString(currentLine);
                 for (int taskInHistory : listOfHistory) {
                     if (taskManagerFromFile.tasks.containsKey(taskInHistory)) {
