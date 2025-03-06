@@ -2,50 +2,57 @@ package task;
 
 import taskmanager.*;
 
+import javax.xml.transform.Source;
+import java.io.File;
+
 
 public class Main {
     public static void main(String[] args) {
         System.out.println("Поехали!");
 
-        TaskManager inMemoryTaskManager = Managers.getDefault();
+        TaskManager fileTaskManager = Managers.getDefault();
 
         Task task1 = new Task("Утренная пробежка", "В 7:00 необходимо сделать утреннюю пробежку", Status.NEW);
-        inMemoryTaskManager.createTask(task1);
-        Task task2 = new Task("Подарить цветы", "После работы купить цветы любимой", Status.NEW);
-        inMemoryTaskManager.createTask(task2);
+        fileTaskManager.createTask(task1);
         Epic epic1 = new Epic("Покупка машины", "План по покупке новой машины", Status.NEW);
-        inMemoryTaskManager.createEpic(epic1);
-        Epic epic2 = new Epic("Покупка дома", "План по покупке дома", Status.NEW);
-        inMemoryTaskManager.createEpic(epic2);
-        Subtask subtask = new Subtask("Выбор марки автомобиля", "Необходимо выбрать марку автомобиля," +
-                "который хочется приобрести", 3, Status.NEW);
-        inMemoryTaskManager.createSubtask(subtask);
-        Subtask subtask1 = new Subtask("Выбор салона", "Выбрать салон, в котором буду покупать" +
-                " машину", 3, Status.NEW);
-        inMemoryTaskManager.createSubtask(subtask1);
-        Subtask subtask2 = new Subtask("Выбор дома", "Выбрать район," +
-                "где хочется проживать", 3, Status.NEW);
-        inMemoryTaskManager.createSubtask(subtask2);
+        fileTaskManager.createEpic(epic1);
+        Subtask subtask1 = new Subtask("Выбор марки автомобиля", "Необходимо выбрать марку автомобиля", epic1.getId(), Status.NEW);
+        fileTaskManager.createSubtask(subtask1);
 
-        inMemoryTaskManager.getTask(task1.getId());
-        System.out.println(inMemoryTaskManager.getEpic(epic1.getId()));
-        System.out.println(inMemoryTaskManager.getHistory());
-        System.out.println(inMemoryTaskManager.getTask(task1.getId()));
-        System.out.println(inMemoryTaskManager.getHistory());
-        System.out.println(inMemoryTaskManager.getTask(task2.getId()));
-        System.out.println(inMemoryTaskManager.getHistory());
-        System.out.println(inMemoryTaskManager.getSubtask(subtask.getId()));
-        System.out.println(inMemoryTaskManager.getHistory());
-        System.out.println(inMemoryTaskManager.getEpic(epic1.getId()));
-        System.out.println(inMemoryTaskManager.getHistory());
-        System.out.println(inMemoryTaskManager.getSubtask(subtask1.getId()));
-        System.out.println(inMemoryTaskManager.getHistory());
-        System.out.println(inMemoryTaskManager.getSubtask(subtask2.getId()));
-        System.out.println(inMemoryTaskManager.getHistory());
+        System.out.println("Выводим все задачи из созданного менеджера");
+        System.out.println(fileTaskManager.printEpics());
+        System.out.println(fileTaskManager.printTasks());
+        System.out.println(fileTaskManager.printSubtasks());
 
-        inMemoryTaskManager.deleteTask(task2.getId());
-        System.out.println(inMemoryTaskManager.getHistory());
-        inMemoryTaskManager.deleteEpic(epic1.getId());
-        System.out.println(inMemoryTaskManager.getHistory());
+        System.out.println("Запрашиваем задачу:");
+        System.out.println(fileTaskManager.getTask(task1.getId()));
+        System.out.println("Запрашиваем подзадачу:");
+        System.out.println(fileTaskManager.getSubtask(subtask1.getId()));
+        System.out.println("Запрашиваем эпик:");
+        System.out.println(fileTaskManager.getEpic(epic1.getId()));
+        System.out.println("Выводим историю запросов из созданного менеджера");
+        System.out.println(fileTaskManager.getHistory());
+        System.out.println("==========================");
+
+
+
+        File file2 = new File("C:\\Users\\Aleksandr\\IdeaProjects\\java-kanban\\task.csv");
+        FileBackedTaskManager taskManagerFromFile = FileBackedTaskManager.loadFromFile(file2);
+        System.out.println("Выводим все задачи из нового менеджера, созданного через файл");
+        System.out.println(taskManagerFromFile.printTasks());
+        System.out.println(taskManagerFromFile.printEpics());
+        System.out.println(taskManagerFromFile.printSubtasks());
+
+        System.out.println("Выводим историю запросов из нового менеджера, созданного через файл");
+        System.out.println(taskManagerFromFile.getHistory());
+
+        Epic epic2 = new Epic("Покупка машины1", "План по покупке новой машины", Status.NEW);
+        taskManagerFromFile.createEpic(epic2);
+        Epic epic3 = new Epic("Покупка машины2", "План по покупке новой машины", Status.NEW);
+        taskManagerFromFile.createEpic(epic3);
+        System.out.println(taskManagerFromFile.printEpics());
+
+
+
     }
 }
