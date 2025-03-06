@@ -55,10 +55,6 @@ public class Task {
         return name;
     }
 
-    public TypeTask getType() {
-        return TypeTask.TASK;
-    }
-
     @Override
     public String toString() {
         return "Task{" +
