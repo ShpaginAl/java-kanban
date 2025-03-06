@@ -30,9 +30,9 @@ public class Main {
         System.out.println(fileTaskManager.getSubtask(subtask1.getId()));
         System.out.println("Запрашиваем эпик:");
         System.out.println(fileTaskManager.getEpic(epic1.getId()));
-//        System.out.println("Выводим историю запросов из созданного менеджера");
-//        System.out.println(fileTaskManager.getHistory());
-//        System.out.println("==========================");
+        System.out.println("Выводим историю запросов из созданного менеджера");
+        System.out.println(fileTaskManager.getHistory());
+        System.out.println("==========================");
 
 
 
