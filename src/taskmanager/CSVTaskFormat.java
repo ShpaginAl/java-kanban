@@ -8,6 +8,7 @@ import java.util.List;
 public class CSVTaskFormat {
 
     public static String toString(Task task) {
+
         if (task.getType() == TypeTask.SUBTASK) {
             Subtask subtask = (Subtask) task;
             return subtask.getId() + "," + subtask.getType() + "," + subtask.getName() + "," + subtask.getStatus() + "," + subtask.getDescription() + "," + subtask.getEpicId();
