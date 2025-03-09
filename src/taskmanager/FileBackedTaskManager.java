@@ -17,37 +17,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.file = file;
     }
 
-    protected void save() {
-        Path pathOfFile = file.toPath();
-        if (!Files.exists(pathOfFile)) {
-            try {
-                System.out.println(pathOfFile);
-                Files.createFile(pathOfFile);
-            } catch (IOException exc) {
-                throw new ManagerSaveException("Не удалось создать файл");
-            }
-        }
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write("id,type,name,status,description,epic\n");
-            for (Task task : tasks.values()) {
-                writer.write(CSVTaskFormat.toString(task) + "\n");
-            }
-            for (Epic epic : epics.values()) {
-                writer.write(CSVTaskFormat.toString(epic) + "\n");
-            }
-            for (Subtask subtask : subtasks.values()) {
-                writer.write(CSVTaskFormat.toString(subtask) + "\n");
-            }
-            if (historyManager.getHistory() != null) {
-                writer.write(CSVTaskFormat.toString(historyManager));
-            } else {
-                writer.write("No value");
-            }
-        } catch (IOException exc) {
-            throw new ManagerSaveException("Ошибка сохранения в файл");
-        }
-    }
-
     public static FileBackedTaskManager loadFromFile(File file) {
         final FileBackedTaskManager taskManagerFromFile = new FileBackedTaskManager(file);
         try (BufferedReader br = new BufferedReader(new FileReader(file))) {
@@ -197,5 +166,36 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void updateSubtask(Subtask subtask) {
         super.updateSubtask(subtask);
         save();
+    }
+
+    private void save() {
+        Path pathOfFile = file.toPath();
+        if (!Files.exists(pathOfFile)) {
+            try {
+                System.out.println(pathOfFile);
+                Files.createFile(pathOfFile);
+            } catch (IOException exc) {
+                throw new ManagerSaveException("Не удалось создать файл");
+            }
+        }
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.write("id,type,name,status,description,epic\n");
+            for (Task task : tasks.values()) {
+                writer.write(CSVTaskFormat.toString(task) + "\n");
+            }
+            for (Epic epic : epics.values()) {
+                writer.write(CSVTaskFormat.toString(epic) + "\n");
+            }
+            for (Subtask subtask : subtasks.values()) {
+                writer.write(CSVTaskFormat.toString(subtask) + "\n");
+            }
+            if (historyManager.getHistory() != null) {
+                writer.write(CSVTaskFormat.toString(historyManager));
+            } else {
+                writer.write("No value");
+            }
+        } catch (IOException exc) {
+            throw new ManagerSaveException("Ошибка сохранения в файл");
+        }
     }
 }
