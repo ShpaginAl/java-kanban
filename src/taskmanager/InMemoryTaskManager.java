@@ -7,11 +7,11 @@ import java.util.List;
 import task.*;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Integer, Task> tasks = new HashMap<Integer, Task>();
-    private final HashMap<Integer, Epic> epics = new HashMap<Integer, Epic>();
-    private final HashMap<Integer, Subtask> subtasks = new HashMap<Integer, Subtask>();
-    private int id = 0;
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected final HashMap<Integer, Task> tasks = new HashMap<Integer, Task>();
+    protected final HashMap<Integer, Epic> epics = new HashMap<Integer, Epic>();
+    protected final HashMap<Integer, Subtask> subtasks = new HashMap<Integer, Subtask>();
+    protected int id = 0;
+    protected final HistoryManager historyManager = Managers.getDefaultHistory();
 
     //создание задач
     @Override
