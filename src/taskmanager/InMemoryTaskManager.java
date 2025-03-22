@@ -117,7 +117,6 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setStatus(Status.NEW);
             setTimeForEpic(epic);
         }
-
     }
 
     //Удаление задач по айди
@@ -305,10 +304,8 @@ public class InMemoryTaskManager implements TaskManager {
             return false;
         } else {
             for (Task taskInList : getPrioritizedTasks()) {
-                if (!task.getName().equals(taskInList.getName()) && task.getStartTime().isBefore(taskInList.getEndTime()) && task.getEndTime().
-                        isAfter(taskInList.getStartTime())) {
-                    throw new IntersectionException("Невозможно сохранить/обновить задачу, так как есть" +
-                            " пересечение с другими задачами!");
+                if (!task.getName().equals(taskInList.getName()) && task.getStartTime().isBefore(taskInList.getEndTime()) && task.getEndTime().isAfter(taskInList.getStartTime())) {
+                    throw new IntersectionException("Невозможно сохранить/обновить задачу, так как есть" + " пересечение с другими задачами!");
                 }
             }
             return false;
