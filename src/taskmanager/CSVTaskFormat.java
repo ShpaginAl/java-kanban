@@ -2,8 +2,11 @@ package taskmanager;
 
 import task.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class CSVTaskFormat {
 
@@ -11,9 +14,9 @@ public class CSVTaskFormat {
 
         if (task.getType() == TypeTask.SUBTASK) {
             Subtask subtask = (Subtask) task;
-            return subtask.getId() + "," + subtask.getType() + "," + subtask.getName() + "," + subtask.getStatus() + "," + subtask.getDescription() + "," + subtask.getEpicId();
+            return subtask.getId() + "," + subtask.getType() + "," + subtask.getName() + "," + subtask.getStatus() + "," + subtask.getDescription() + "," + subtask.getStartTime() + "," + subtask.getDuration() + "," + subtask.getEpicId();
         }
-        return task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription();
+        return task.getId() + "," + task.getType() + "," + task.getName() + "," + task.getStatus() + "," + task.getDescription() + "," + task.getStartTime() + "," + task.getDuration();
     }
 
     public static Task taskFromString(String value) {
@@ -23,13 +26,15 @@ public class CSVTaskFormat {
         final String description = partOfTask[4];
         final Status status = Status.valueOf(partOfTask[3]);
         int id = Integer.parseInt(partOfTask[0]);
+        final LocalDateTime startTime = LocalDateTime.parse(partOfTask[5]);
+        final Duration duration = Duration.parse(partOfTask[6]);
 
         if (type == TypeTask.SUBTASK) {
-            return new Subtask(name, description, Integer.parseInt(partOfTask[5]), status, id);
+            return new Subtask(name, description, Integer.parseInt(partOfTask[7]), status, id, duration, startTime);
         } else if (type == TypeTask.EPIC) {
             return new Epic(name, description, status, id);
         } else {
-            return new Task(name, description, status, id);
+            return new Task(name, description, status, id, duration, startTime);
         }
     }
 
