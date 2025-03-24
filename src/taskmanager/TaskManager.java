@@ -64,5 +64,4 @@ public interface TaskManager {
 
     TreeSet<Task> getPrioritizedTasks();
 
-    boolean isIntersectionBetweenTasks(Task task);
 }

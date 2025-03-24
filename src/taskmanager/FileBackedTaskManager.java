@@ -31,11 +31,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                             taskManagerFromFile.tasks.put(task.getId(), task);
                             taskManagerFromFile.id++;
                         } else {
-                            if (!taskManagerFromFile.isIntersectionBetweenTasks(task)) {
-                                taskManagerFromFile.tasks.put(task.getId(), task);
+                            taskManagerFromFile.tasks.put(task.getId(), task);
+                            if (task.getStartTime() != null) {
                                 taskManagerFromFile.prioritizedTask.add(task);
-                                taskManagerFromFile.id++;
                             }
+                            taskManagerFromFile.id++;
                         }
                         break;
                     case EPIC:
@@ -43,11 +43,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                             taskManagerFromFile.epics.put(task.getId(), (Epic) task);
                             taskManagerFromFile.id++;
                         } else {
-                            if (!taskManagerFromFile.isIntersectionBetweenTasks(task)) {
-                                taskManagerFromFile.epics.put(task.getId(), (Epic) task);
+                            taskManagerFromFile.epics.put(task.getId(), (Epic) task);
+                            if (task.getStartTime() != null) {
                                 taskManagerFromFile.prioritizedTask.add(task);
-                                taskManagerFromFile.id++;
                             }
+                            taskManagerFromFile.id++;
                         }
                         break;
                     case SUBTASK:
@@ -55,11 +55,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                             taskManagerFromFile.subtasks.put(task.getId(), (Subtask) task);
                             taskManagerFromFile.id++;
                         } else {
-                            if (!taskManagerFromFile.isIntersectionBetweenTasks(task)) {
-                                taskManagerFromFile.subtasks.put(task.getId(), (Subtask) task);
+                            taskManagerFromFile.subtasks.put(task.getId(), (Subtask) task);
+                            if (task.getStartTime() != null) {
                                 taskManagerFromFile.prioritizedTask.add(task);
-                                taskManagerFromFile.id++;
                             }
+                            taskManagerFromFile.id++;
                         }
                         break;
                 }
@@ -194,24 +194,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         super.updateSubtask(subtask);
         save();
     }
-
-    public int createTaskFromFile(FileBackedTaskManager fileBackedTaskManager, Task task) {
-        if (task.getStartTime() == null) {
-            tasks.put(task.getId(), task);
-            fileBackedTaskManager.id++;
-            return id;
-        } else {
-            if (!isIntersectionBetweenTasks(task)) {
-                tasks.put(task.getId(), task);
-                prioritizedTask.add(task);
-                fileBackedTaskManager.id++;
-                return id;
-            } else {
-                return 0;
-            }
-        }
-    }
-
 
     private void save() {
         Path pathOfFile = file.toPath();
