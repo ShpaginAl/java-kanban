@@ -1,3 +1,4 @@
-id,type,name,status,description,epic
-1,TASK,Утренная пробежка,NEW,В 7:00 необходимо сделать утреннюю пробежку
-1
+id,type,name,status,description,epic,startTime,duration
+1,TASK,Утренная пробежка,NEW,В 7:00 необходимо сделать утреннюю пробежку,2026-04-30T20:30,PT1H40M
+2,TASK,Утренная пробежка,NEW,В 8:00 необходимо сделать утреннюю пробежку,null,null
+No value

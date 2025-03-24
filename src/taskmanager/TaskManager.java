@@ -2,16 +2,17 @@ package taskmanager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeSet;
 
 import task.*;
 
 public interface TaskManager {
     //создание задач
-    void createTask(Task task);
+    int createTask(Task task);
 
-    void createEpic(Epic epic);
+    int createEpic(Epic epic);
 
-    void createSubtask(Subtask subtask);
+    int createSubtask(Subtask subtask);
 
     //Получение всех задач
     HashMap<Integer, Task> printTasks();
@@ -60,4 +61,7 @@ public interface TaskManager {
     void getSubtasksOfEpic(int epicId);
 
     ArrayList<Task> getHistory();
+
+    TreeSet<Task> getPrioritizedTasks();
+
 }

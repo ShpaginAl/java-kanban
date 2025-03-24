@@ -1,8 +1,8 @@
 package taskmanager;
 
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 import task.*;
 
@@ -12,26 +12,55 @@ public class InMemoryTaskManager implements TaskManager {
     protected final HashMap<Integer, Subtask> subtasks = new HashMap<Integer, Subtask>();
     protected int id = 0;
     protected final HistoryManager historyManager = Managers.getDefaultHistory();
+    protected TreeSet<Task> prioritizedTask = new TreeSet<>(Comparator.comparing(Task::getStartTime).thenComparing(Task::getName));
 
     //создание задач
     @Override
-    public void createTask(Task task) {
-        task.setId(counterOfId());
-        tasks.put(id, task);
+    public int createTask(Task task) {
+        if (task.getStartTime() == null) {
+            task.setId(counterOfId());
+            tasks.put(id, task);
+            return id;
+        } else {
+            if (!isIntersectionBetweenTasks(task)) {
+                task.setId(counterOfId());
+                tasks.put(id, task);
+                prioritizedTask.add(task);
+            }
+        }
+        return id;
     }
 
     @Override
-    public void createEpic(Epic epic) {
+    public int createEpic(Epic epic) {
         epic.setId(counterOfId());
         epics.put(id, epic);
+        setTimeForEpic(epic);
+        return id;
     }
 
     @Override
-    public void createSubtask(Subtask subtask) {
-        subtask.setId(counterOfId());
-        if (epics.containsKey(subtask.getEpicId())) {
-            subtasks.put(id, subtask);
-            epics.get(subtask.getEpicId()).setSubtasks(subtask.getId());
+    public int createSubtask(Subtask subtask) {
+        if (subtask.getStartTime() == null) {
+            if (epics.containsKey(subtask.getEpicId())) {
+                subtask.setId(counterOfId());
+                subtasks.put(id, subtask);
+                setTimeForEpic(epics.get(subtask.getEpicId()));
+                epics.get(subtask.getEpicId()).setSubtasksOfEpic(subtask.getId());
+                return id;
+            }
+            return 0;
+        } else {
+            if (!isIntersectionBetweenTasks(subtask)) {
+                if (epics.containsKey(subtask.getEpicId())) {
+                    subtask.setId(counterOfId());
+                    subtasks.put(id, subtask);
+                    epics.get(subtask.getEpicId()).setSubtasksOfEpic(subtask.getId());
+                    prioritizedTask.add(subtask);
+                    setTimeForEpic(epics.get(subtask.getEpicId()));
+                }
+            }
+            return id;
         }
     }
 
@@ -55,6 +84,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllTasks() {
         tasks.clear();
+        prioritizedTask.removeIf(task -> task.getType().equals(TypeTask.TASK));
     }
 
     //Удалить все эпики
@@ -66,21 +96,27 @@ public class InMemoryTaskManager implements TaskManager {
                 subtasks.remove(subtask.getId());
             }
         }
+        prioritizedTask.removeIf(task -> task.getType().equals(TypeTask.EPIC));
     }
 
     //Удалить все подзадачи
     @Override
     public void deleteAllSubtasks() {
         subtasks.clear();
+        prioritizedTask.removeIf(task -> task.getType().equals(TypeTask.SUBTASK));
         for (Epic epic : epics.values()) {
-            epic.getSubtasks().clear();
+            epic.getSubtasksOfEpic().clear();
             epic.setStatus(Status.NEW);
+            setTimeForEpic(epic);
         }
     }
 
     //Удаление задач по айди
     @Override
     public void deleteTask(int id) {
+        if (prioritizedTask.contains(tasks.get(id))) {
+            prioritizedTask.remove(tasks.get(id));
+        }
         tasks.remove(id);
         historyManager.remove(id);
     }
@@ -106,12 +142,16 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteSubtask(int id) {
         Subtask deletedSubtask = subtasks.get(id);
+        setTimeForEpic(epics.get(subtasks.get(id).getEpicId()));
+        if (prioritizedTask.contains(subtasks.get(id))) {
+            prioritizedTask.remove(subtasks.get(id));
+        }
         subtasks.remove(id);
         historyManager.remove(id);
         for (Epic epic : epics.values()) {
-            for (int i = 0; i < epic.getSubtasks().size(); i++) {
-                if (epic.getSubtasks().get(i) == id) {
-                    epic.getSubtasks().remove(i);
+            for (int i = 0; i < epic.getSubtasksOfEpic().size(); i++) {
+                if (epic.getSubtasksOfEpic().get(i) == id) {
+                    epic.getSubtasksOfEpic().remove(i);
                 }
             }
         }
@@ -134,6 +174,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Epic getEpic(int id) {
         if (epics.containsKey(id)) {
             historyManager.addValueInHistory(epics.get(id));
+            setTimeForEpic(epics.get(id));
             return epics.get(id);
         } else {
             return null;
@@ -154,9 +195,19 @@ public class InMemoryTaskManager implements TaskManager {
     // Обновление задачи
     @Override
     public void updateTask(Task task) {
-        tasks.get(task.getId()).setName(task.getName());
-        tasks.get(task.getId()).setDescription(task.getDescription());
-        tasks.get(task.getId()).setStatus(task.getStatus());
+        if (!isIntersectionBetweenTasks(task)) {
+            tasks.get(task.getId()).setName(task.getName());
+            tasks.get(task.getId()).setDescription(task.getDescription());
+            tasks.get(task.getId()).setStatus(task.getStatus());
+            tasks.get(task.getId()).setStartTime(task.getStartTime());
+            tasks.get(task.getId()).setDuration(task.getDuration());
+            if (task.getStartTime() != null) {
+                if (prioritizedTask.contains(task)) {
+                    prioritizedTask.remove(task);
+                    prioritizedTask.add(task);
+                }
+            }
+        }
     }
 
     // обновление эпика
@@ -169,16 +220,27 @@ public class InMemoryTaskManager implements TaskManager {
     // обновление подзадачи
     @Override
     public void updateSubtask(Subtask subtask) {
-        subtasks.get(subtask.getId()).setName(subtask.getName());
-        subtasks.get(subtask.getId()).setDescription(subtask.getDescription());
-        subtasks.get(subtask.getId()).setStatus(subtask.getStatus());
-        updateStatusOfEpic(subtask);
+        if (!isIntersectionBetweenTasks(subtask)) {
+            subtasks.get(subtask.getId()).setName(subtask.getName());
+            subtasks.get(subtask.getId()).setDescription(subtask.getDescription());
+            subtasks.get(subtask.getId()).setStatus(subtask.getStatus());
+            subtasks.get(subtask.getId()).setDuration(subtask.getDuration());
+            subtasks.get(subtask.getId()).setStartTime(subtask.getStartTime());
+            updateStatusOfEpic(subtask);
+            setTimeForEpic(epics.get(subtask.getEpicId()));
+            if (subtask.getStartTime() != null) {
+                if (prioritizedTask.contains(subtask)) {
+                    prioritizedTask.remove(subtask);
+                    prioritizedTask.add(subtask);
+                }
+            }
+        }
     }
 
     //Получить подзадачи определенного эпика
     @Override
     public void getSubtasksOfEpic(int epicId) {
-        ArrayList<Integer> subtasksInEpic = epics.get(epicId).getSubtasks();
+        ArrayList<Integer> subtasksInEpic = epics.get(epicId).getSubtasksOfEpic();
         if (!subtasksInEpic.isEmpty()) {
             for (int subtask : subtasksInEpic) {
                 System.out.println(subtasks.get(subtask));
@@ -195,7 +257,7 @@ public class InMemoryTaskManager implements TaskManager {
     private void updateStatusOfEpic(Subtask subtask) {
         boolean isDone = true;
         boolean isNew = true;
-        for (int subtaskId : epics.get(subtask.getEpicId()).getSubtasks()) {
+        for (int subtaskId : epics.get(subtask.getEpicId()).getSubtasksOfEpic()) {
             if (subtasks.get(subtaskId).getStatus() == Status.IN_PROGRESS) {
                 isNew = false;
                 isDone = false;
@@ -214,8 +276,49 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
+    @Override
+    public TreeSet<Task> getPrioritizedTasks() {
+        return prioritizedTask;
+    }
+
     //Счетчик id
     private int counterOfId() {
         return id += 1;
+    }
+
+    private boolean isIntersectionBetweenTasks(Task task) {
+        if (!prioritizedTask.isEmpty()) {
+            for (Task taskInList : getPrioritizedTasks()) {
+                if (!task.getName().equals(taskInList.getName()) && task.getStartTime().isBefore(taskInList.getEndTime()) && task.getEndTime().isAfter(taskInList.getStartTime())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void setTimeForEpic(Epic epic) {
+        LocalDateTime startTime = null;
+        LocalDateTime endTime = null;
+        Duration duration = null;
+        for (int i = 0; i < epic.getSubtasksOfEpic().size(); i++) {
+            if (startTime == null) {
+                startTime = subtasks.get(epic.getSubtasksOfEpic().get(i)).getStartTime();
+            } else {
+                if (subtasks.get(epic.getSubtasksOfEpic().get(i)).getStartTime().isBefore(startTime)) {
+                    startTime = subtasks.get(epic.getSubtasksOfEpic().get(i)).getStartTime();
+                }
+            }
+            if (endTime == null) {
+                endTime = subtasks.get(epic.getSubtasksOfEpic().get(i)).getEndTime();
+            } else {
+                if (subtasks.get(epic.getSubtasksOfEpic().get(i)).getEndTime().isAfter(endTime)) ;
+                endTime = subtasks.get(epic.getSubtasksOfEpic().get(i)).getEndTime();
+            }
+            duration = Duration.between(startTime, endTime);
+        }
+        epic.setStartTime(startTime);
+        epic.setDuration(duration);
+        epic.setEndTime(endTime);
     }
 }

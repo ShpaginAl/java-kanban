@@ -27,16 +27,40 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 Task task = CSVTaskFormat.taskFromString(currentLine);
                 switch (task.getType()) {
                     case TASK:
-                        taskManagerFromFile.tasks.put(task.getId(), task);
-                        taskManagerFromFile.id++;
+                        if (task.getStartTime() == null) {
+                            taskManagerFromFile.tasks.put(task.getId(), task);
+                            taskManagerFromFile.id++;
+                        } else {
+                            taskManagerFromFile.tasks.put(task.getId(), task);
+                            if (task.getStartTime() != null) {
+                                taskManagerFromFile.prioritizedTask.add(task);
+                            }
+                            taskManagerFromFile.id++;
+                        }
                         break;
                     case EPIC:
-                        taskManagerFromFile.epics.put(task.getId(), (Epic) task);
-                        taskManagerFromFile.id++;
+                        if (task.getStartTime() == null) {
+                            taskManagerFromFile.epics.put(task.getId(), (Epic) task);
+                            taskManagerFromFile.id++;
+                        } else {
+                            taskManagerFromFile.epics.put(task.getId(), (Epic) task);
+                            if (task.getStartTime() != null) {
+                                taskManagerFromFile.prioritizedTask.add(task);
+                            }
+                            taskManagerFromFile.id++;
+                        }
                         break;
                     case SUBTASK:
-                        taskManagerFromFile.subtasks.put(task.getId(), (Subtask) task);
-                        taskManagerFromFile.id++;
+                        if (task.getStartTime() == null) {
+                            taskManagerFromFile.subtasks.put(task.getId(), (Subtask) task);
+                            taskManagerFromFile.id++;
+                        } else {
+                            taskManagerFromFile.subtasks.put(task.getId(), (Subtask) task);
+                            if (task.getStartTime() != null) {
+                                taskManagerFromFile.prioritizedTask.add(task);
+                            }
+                            taskManagerFromFile.id++;
+                        }
                         break;
                 }
                 currentLine = nextLine;
@@ -64,21 +88,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void createTask(Task task) {
+    public int createTask(Task task) {
         super.createTask(task);
         save();
+        return task.getId();
     }
 
     @Override
-    public void createEpic(Epic epic) {
+    public int createEpic(Epic epic) {
         super.createEpic(epic);
         save();
+        return epic.getId();
     }
 
     @Override
-    public void createSubtask(Subtask subtask) {
+    public int createSubtask(Subtask subtask) {
         super.createSubtask(subtask);
         save();
+        return subtask.getId();
     }
 
     @Override
@@ -179,7 +206,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
         }
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write("id,type,name,status,description,epic\n");
+            writer.write("id,type,name,status,description,epic,startTime,duration\n");
             for (Task task : tasks.values()) {
                 writer.write(CSVTaskFormat.toString(task) + "\n");
             }

@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import task.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,14 +27,13 @@ class InMemoryTaskManagerTest {
     @BeforeEach
     public void beforeEach() {
         taskManager = Managers.getDefault();
-        task1 = new Task("Утренная пробежка", "В 7:00 необходимо сделать утреннюю пробежку", Status.NEW);
+        task1 = new Task("Утренная пробежка", "В 7:00 необходимо сделать утреннюю пробежку", Status.NEW, Duration.ofMinutes(100), LocalDateTime.of(2026, 4, 30, 20, 30));
         task2 = new Task("Утренная пробежка", "В 8:00 необходимо сделать утреннюю пробежку", Status.NEW);
         epic1 = new Epic("Покупка машины", "План по покупке новой машины", Status.NEW);
         epic2 = new Epic("Покупка квартиры", "План по покупке новой квартиры", Status.NEW);
-        subtask1 = new Subtask("Выбор салона", "Выбрать салон, в котором буду покупать" +
-                " машину", 1, Status.NEW);
-        subtask2 = new Subtask("Выбор салона", "Выбрать салон, в котором буду покупать" +
-                " машину", 1, Status.NEW);
+        subtask1 = new Subtask("Выбор марки автомобиля", "Необходимо выбрать марку автомобиля", 1, Status.NEW, Duration.ofMinutes(100), LocalDateTime.of(2023, 4, 30, 20, 30));
+        subtask2 = new Subtask("Выбор марки автомобиля", "Необходимо выбрать марку мотоцикла", 1, Status.NEW, Duration.ofMinutes(100), LocalDateTime.of(2025, 4, 30, 20, 30));
+
         tasksList = new ArrayList<>();
         epicslist = new ArrayList<>();
         subtasksList = new ArrayList<>();
@@ -43,13 +44,14 @@ class InMemoryTaskManagerTest {
         epicslist.add(epic2);
         subtasksList.add(subtask1);
         subtasksList.add(subtask2);
-
     }
 
     @Test
     public void addNewTaskInTaskManager() {
-        taskManager.createTask(task1);
-        assertEquals(task1, taskManager.getTask(task1.getId()), "Должна возвращаться добавленная задача");
+        taskManager = Managers.getDefault();
+        Task task1 = new Task("Утренная пробежка", "В 7:00 необходимо сделать утреннюю пробежку", Status.NEW);
+        int taskId = taskManager.createTask(task1);
+        assertEquals(task1, taskManager.getTask(taskId), "Должна возвращаться добавленная задача");
     }
 
     @Test
@@ -133,7 +135,7 @@ class InMemoryTaskManagerTest {
     @Test
     public void CheckUpdateOfTask() {
         taskManager.createTask(task1);
-        task1 = new Task("Дневная пробежка", "В 10:00 необходимо сделать утреннюю пробежку", Status.NEW, task1.getId());
+        task1 = new Task("Дневная пробежка", "В 10:00 необходимо сделать утреннюю пробежку", Status.NEW, task1.getId(), Duration.ofMinutes(100), LocalDateTime.of(2023, 4, 30, 20, 30));
         taskManager.updateTask(task1);
         assertEquals(task1, taskManager.getTask(task1.getId()), "Задача должна обновляться в менеджере");
     }
@@ -151,7 +153,7 @@ class InMemoryTaskManagerTest {
         taskManager.createEpic(epic1);
         taskManager.createSubtask(subtask1);
         subtask1 = new Subtask("Выбор нескольких салонов", "Выбрать салон, в котором буду покупать" +
-                " авто", 1, Status.NEW, subtask1.getId());
+                " авто", 1, Status.NEW, subtask1.getId(), Duration.ofMinutes(100), LocalDateTime.of(2024, 4, 30, 20, 30));
         taskManager.updateSubtask(subtask1);
         assertEquals(subtask1, taskManager.getSubtask(subtask1.getId()), "Подзадача должна обновляться в менеджере");
     }
@@ -161,7 +163,7 @@ class InMemoryTaskManagerTest {
         taskManager.createEpic(epic1);
         taskManager.createSubtask(subtask1);
         subtask1 = new Subtask("Выбор нескольких салонов", "Выбрать салон, в котором буду покупать" +
-                " авто", 1, Status.IN_PROGRESS, subtask1.getId());
+                " авто", 1, Status.IN_PROGRESS, subtask1.getId(), Duration.ofMinutes(100), LocalDateTime.of(2024, 4, 30, 20, 30));
         assertNotEquals(subtask1.getStatus(), Status.NEW, "Статус эпика должен обновляться при обновлении статуса связанных подзадач");
     }
 
@@ -193,7 +195,7 @@ class InMemoryTaskManagerTest {
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.deleteAllSubtasks();
-        assertEquals(0, epic1.getSubtasks().size(), "Подзадача должна удаляться из списка связанных задач эпика при ее удалении");
+        assertEquals(0, epic1.getSubtasksOfEpic().size(), "Подзадача должна удаляться из списка связанных задач эпика при ее удалении");
     }
 
     @Test
@@ -205,8 +207,16 @@ class InMemoryTaskManagerTest {
         assertEquals(0, taskManager.printSubtasks().size(), "Подзадачи должны удаляться при удалении связанного эпика");
     }
 
-    private <T extends Task> void assertArrayEquals(ArrayList<T> tasksList, ArrayList<T> tasks) {
+    @Test
+    public void prioritizedTaskIsPrioritize() {
+        taskManager.createEpic(epic1);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        assertEquals(subtask1.getId(), taskManager.getPrioritizedTasks().first().getId());
     }
 
-
+    private <T extends Task> void assertArrayEquals(ArrayList<T> tasksList, ArrayList<T> tasks) {
+    }
+//
+//
 }
