@@ -58,7 +58,7 @@ public interface TaskManager {
     void updateSubtask(Subtask subtask);
 
     //Получить подзадачи определенного эпика
-    void getSubtasksOfEpic(int epicId);
+    ArrayList<Integer> getSubtasksOfEpic(int epicId);
 
     ArrayList<Task> getHistory();
 

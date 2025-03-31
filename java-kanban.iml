@@ -50,5 +50,8 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="json" level="project" />
+    <orderEntry type="library" name="gson-2.12.1" level="project" />
+    <orderEntry type="library" name="google.code.gson" level="project" />
   </component>
 </module>

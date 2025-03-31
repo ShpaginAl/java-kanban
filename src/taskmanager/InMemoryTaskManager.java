@@ -26,9 +26,10 @@ public class InMemoryTaskManager implements TaskManager {
                 task.setId(counterOfId());
                 tasks.put(id, task);
                 prioritizedTask.add(task);
+                return id;
             }
+            return 0;
         }
-        return id;
     }
 
     @Override
@@ -58,9 +59,10 @@ public class InMemoryTaskManager implements TaskManager {
                     epics.get(subtask.getEpicId()).setSubtasksOfEpic(subtask.getId());
                     prioritizedTask.add(subtask);
                     setTimeForEpic(epics.get(subtask.getEpicId()));
+                    return id;
                 }
             }
-            return id;
+            return 0;
         }
     }
 
@@ -239,13 +241,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     //Получить подзадачи определенного эпика
     @Override
-    public void getSubtasksOfEpic(int epicId) {
-        ArrayList<Integer> subtasksInEpic = epics.get(epicId).getSubtasksOfEpic();
-        if (!subtasksInEpic.isEmpty()) {
-            for (int subtask : subtasksInEpic) {
-                System.out.println(subtasks.get(subtask));
-            }
-        }
+    public ArrayList<Integer> getSubtasksOfEpic(int epicId) {
+        return epics.get(epicId).getSubtasksOfEpic();
     }
 
     @Override

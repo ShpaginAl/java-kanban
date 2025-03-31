@@ -104,8 +104,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     @Override
     public int createSubtask(Subtask subtask) {
         super.createSubtask(subtask);
-        save();
-        return subtask.getId();
+        if (subtask.getId() != null) {
+            save();
+            return subtask.getId();
+        }
+        return 0;
     }
 
     @Override

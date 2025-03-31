@@ -17,7 +17,7 @@ public class Main {
         fileTaskManager.createTask(task1);
         Epic epic1 = new Epic("Покупка машины", "План по покупке новой машины", Status.NEW);
         fileTaskManager.createEpic(epic1);
-        Subtask subtask1 = new Subtask("Выбор марки автомобиля", "Необходимо выбрать марку автомобиля", epic1.getId(), Status.NEW, Duration.ofMinutes(100), LocalDateTime.of(2022, 3, 30, 20, 30));
+        Subtask subtask1 = new Subtask("Выбор марки автомобиля", "Необходимо выбрать марку автомобиля", epic1.getId(), Status.NEW, Duration.ofMinutes(100), LocalDateTime.of(2024, 7, 30, 20, 50));
         fileTaskManager.createSubtask(subtask1);
         Subtask subtask2 = new Subtask("Выбор марки мотоцикла", "Необходимо выбрать марку мотоцикла", epic1.getId(), Status.NEW, Duration.ofMinutes(100), LocalDateTime.of(2024, 7, 30, 20, 50));
         fileTaskManager.createSubtask(subtask2);
